@@ -128,7 +128,6 @@ def main():
     with open(CONDUCTORES_FILENAME, "w") as file:
         file.write("DNI;Nombre;Apellido1;Apellido2;Direccion;Poblado;Correo;Telefono;FechaNacimiento;TipoCarnet;FechaCarnet\n")
 
-
     with open(PROPIETARIOS_FILENAME, "w") as file:
         file.write("DNI;Nombre;Apellido1;Apellido2;Direccion;Poblado;Correo;Telefono;FechaNacimiento\n")
 
@@ -190,16 +189,16 @@ def main():
         currConductorDict = currObject["vehicle"]["Driver"]
         currFechaNacimientoConductor = Fecha(
             Dia=int(currFechaNacimientoConductorItems[0]),
-            Mes=int(currFechaNacimientoConductorItems[0]),
-            Año=int(currFechaNacimientoConductorItems[0])
+            Mes=int(currFechaNacimientoConductorItems[1]),
+            Año=int(currFechaNacimientoConductorItems[2])
         )
 
         currFechaCarnet = currConductorDict["driving license"]["date"]
         currFechaCarnet = currFechaCarnet.split("/")
         currFechaCarnet = Fecha(
             Dia=int(currFechaNacimientoConductorItems[0]),
-            Mes=int(currFechaNacimientoConductorItems[0]),
-            Año=int(currFechaNacimientoConductorItems[0])
+            Mes=int(currFechaNacimientoConductorItems[1]),
+            Año=int(currFechaNacimientoConductorItems[2])
         )
 
         currConductor = Conductor(
