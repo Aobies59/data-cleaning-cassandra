@@ -168,8 +168,8 @@ def main():
         currHoraRegistroItems = currHoraRegistro.split(":")
         currHoraRegistro = Hora(
             Hora=int(currHoraRegistroItems[0]),
-            Minuto=int(currHoraRegistroItems[0]),
-            Segundo=int(currHoraRegistroItems[0])
+            Minuto=int(currHoraRegistroItems[1]),
+            Segundo=int(currHoraRegistroItems[2].split(".")[0])
         )
         currRegistro = Registro(
             ID = currObject["Record"]["rec_ID"],
@@ -181,7 +181,7 @@ def main():
         if currRegistro.ID not in idsRegistros:
             idsRegistros.add(currRegistro.ID)
             with open(REGISTROS_FILENAME, "a") as registrosFile:
-                registrosFile.write(f"{currRegistro.ID};{currRegistro.Fecha};{currRegistro.Hora};{currRegistro.Archivo};{currRegistro.Velocidad}\n")
+                registrosFile.write(f"{currRegistro.ID};{currRegistro.Archivo};{currRegistro.Fecha};{currRegistro.Hora};{currRegistro.Velocidad}\n")
 
         #conductores
         currFechaNacimientoConductor = currObject["vehicle"]["Driver"]["Birthdate"]
@@ -288,7 +288,7 @@ def main():
         if currVehiculo.Matricula not in idsVehiculos:
             idsVehiculos.add(currVehiculo.Matricula)
             with open(VEHICULOS_FILENAME, "a") as vehiculosFile:
-                vehiculosFile.write(f"{currVehiculo.Matricula};{currVehiculo.Marca};{currVehiculo.Potencia};{currVehiculo.Color};{currVehiculo.NumChasis};{currVehiculo.FechaMatriculacion};{currVehiculo.FechaITV};{currVehiculo.Propietario}\n")
+                vehiculosFile.write(f"{currVehiculo.Matricula};{currVehiculo.Marca};{currVehiculo.Modelo};{currVehiculo.Potencia};{currVehiculo.Color};{currVehiculo.NumChasis};{currVehiculo.FechaMatriculacion};{currVehiculo.FechaITV};{currVehiculo.Propietario}\n")
 
         #expedientes
         currFechaExpedienteItems = currObject["dump date"].split("/")
@@ -311,7 +311,7 @@ def main():
         if currExpediente.ID not in idsExpedientes:
             idsExpedientes.add(currExpediente.ID)
             with open(EXPEDIENTES_FILENAME, "a") as expedientesFile:
-                expedientesFile.write(f"{currExpediente.ID};{currExpediente.Fecha};{currExpediente.Carretera};{currExpediente.Registro};{currExpediente.Conductor};{currExpediente.Vehiculo};{currExpediente.Tramo};{currExpediente.Sentido}\n")
+                expedientesFile.write(f"{currExpediente.ID};{currExpediente.Fecha};{currExpediente.Tramo};{currExpediente.Sentido};{currExpediente.Carretera};{currExpediente.Registro};{currExpediente.Conductor};{currExpediente.Vehiculo}\n")
 
     print("Data transformed correctly")
 
