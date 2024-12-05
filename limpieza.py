@@ -19,7 +19,7 @@ class Fecha:
                 añoStr = f"20{añoStr}"
             else:
                 añoStr = f"19{añoStr}"
-        return f"{diaStr}/{mesStr}/{añoStr}"
+        return f"{añoStr}-{mesStr}-{diaStr}"
 
 @dataclass
 class Hora:
@@ -95,6 +95,13 @@ class Expediente:
     Conductor: str
     Vehiculo: str
 
+CARRETERAS_FILENAME = "data/carreteras.csv"
+CONDUCTORES_FILENAME = "data/conductores.csv"
+EXPEDIENTES_FILENAME = "data/expedientes.csv"
+PROPIETARIOS_FILENAME = "data/propietarios.csv"
+REGISTROS_FILENAME = "data/registros.csv"
+VEHICULOS_FILENAME = "data/vehiculos.csv"
+
 def main():
     for filename in os.listdir("data"):
         filePath = os.path.join("data", filename)
@@ -112,6 +119,25 @@ def main():
     idsVehiculos = set()
     idsExpedientes = set()
 
+    with open(CARRETERAS_FILENAME, "w") as file:
+        file.write("Nombre;LimiteVelocidad\n")
+
+    with open(REGISTROS_FILENAME, "w") as file:
+        file.write("ID;Archivo;Fecha;Hora;Velocidad\n")
+
+    with open(CONDUCTORES_FILENAME, "w") as file:
+        file.write("DNI;Nombre;Apellido1;Apellido2;Direccion;Poblado;Correo;Telefono;FechaNacimiento;TipoCarnet;FechaCarnet\n")
+
+
+    with open(PROPIETARIOS_FILENAME, "w") as file:
+        file.write("DNI;Nombre;Apellido1;Apellido2;Direccion;Poblado;Correo;Telefono;FechaNacimiento\n")
+
+    with open(VEHICULOS_FILENAME, "w") as file:
+        file.write("Matricula;Marca;Modelo;Potencia;Color;NumChasis;FechaMatriculacion;FechaITV;Propietario\n")
+
+    with open(EXPEDIENTES_FILENAME, "w") as file:
+        file.write("ID;Fecha;Tramo;Sentido;Carretera;Registro;Conductor;Vehiculo\n")
+
     firstTime = True
     for currObject in data:
         if firstTime:
@@ -128,9 +154,8 @@ def main():
 
         if currCarretera.Nombre not in idsCarreteras:
             idsCarreteras.add(currCarretera.Nombre)
-            with open("data/carreteras.json", "a") as carreterasFile:
-                carreterasFile.write(json.dumps(asdict(currCarretera)))
-                carreterasFile.write("\n")
+            with open(CARRETERAS_FILENAME, "a") as carreterasFile:
+                carreterasFile.write(f"{currCarretera.Nombre};{currCarretera.LimiteVelocidad}\n")
 
         # registros
         currFechaRegistro = currObject["Record"]["date"]
@@ -156,9 +181,8 @@ def main():
         )
         if currRegistro.ID not in idsRegistros:
             idsRegistros.add(currRegistro.ID)
-            with open("data/registros.json", "a") as registrosFile:
-                registrosFile.write(json.dumps(asdict(currRegistro)))
-                registrosFile.write("\n")
+            with open(REGISTROS_FILENAME, "a") as registrosFile:
+                registrosFile.write(f"{currRegistro.ID};{currRegistro.Fecha};{currRegistro.Hora};{currRegistro.Archivo};{currRegistro.Velocidad}\n")
 
         #conductores
         currFechaNacimientoConductor = currObject["vehicle"]["Driver"]["Birthdate"]
@@ -194,9 +218,8 @@ def main():
 
         if currConductor.DNI not in idsConductores:
             idsConductores.add(currConductor.DNI)
-            with open("data/conductores.json", "a") as conductoresFile:
-                conductoresFile.write(json.dumps(asdict(currConductor)))
-                conductoresFile.write("\n")
+            with open(CONDUCTORES_FILENAME, "a") as conductoresFile:
+                conductoresFile.write(f"{currConductor.DNI};{currConductor.Nombre};{currConductor.Apellido1};{currConductor.Apellido2};{currConductor.Direccion};{currConductor.Poblado};{currConductor.Correo};{currConductor.Telefono};{currConductor.FechaNacimiento};{currConductor.TipoCarnet};{currConductor.FechaCarnet}\n")
 
         # propietarios
         currPropietarioDict = currObject["vehicle"]["Owner"]
@@ -221,9 +244,8 @@ def main():
         )
         if currPropietario.DNI not in idsPropietarios:
             idsPropietarios.add(currPropietario.DNI)
-            with open("data/propietarios.json", "a") as propietariosFile:
-                propietariosFile.write(json.dumps(asdict(currPropietario)))
-                propietariosFile.write("\n")
+            with open(PROPIETARIOS_FILENAME, "a") as propietariosFile:
+                propietariosFile.write(f"{currPropietario.DNI};{currPropietario.Nombre};{currPropietario.Apellido1};{currPropietario.Apellido2};{currPropietario.Direccion};{currPropietario.Poblado};{currPropietario.Correo};{currPropietario.Telefono};{currPropietario.FechaNacimiento}\n")
 
         # vehiculos
         currVehiculoDict = currObject["vehicle"]
@@ -266,9 +288,8 @@ def main():
 
         if currVehiculo.Matricula not in idsVehiculos:
             idsVehiculos.add(currVehiculo.Matricula)
-            with open("data/vehiculos.json", "a") as vehiculosFile:
-                vehiculosFile.write(json.dumps(asdict(currVehiculo)))
-                vehiculosFile.write("\n")
+            with open(VEHICULOS_FILENAME, "a") as vehiculosFile:
+                vehiculosFile.write(f"{currVehiculo.Matricula};{currVehiculo.Marca};{currVehiculo.Potencia};{currVehiculo.Color};{currVehiculo.NumChasis};{currVehiculo.FechaMatriculacion};{currVehiculo.FechaITV};{currVehiculo.Propietario}\n")
 
         #expedientes
         currFechaExpedienteItems = currObject["dump date"].split("/")
@@ -290,9 +311,8 @@ def main():
         )
         if currExpediente.ID not in idsExpedientes:
             idsExpedientes.add(currExpediente.ID)
-            with open("data/expedientes.json", "a") as expedientesFile:
-                expedientesFile.write(json.dumps(asdict(currExpediente)))
-                expedientesFile.write("\n")
+            with open(EXPEDIENTES_FILENAME, "a") as expedientesFile:
+                expedientesFile.write(f"{currExpediente.ID};{currExpediente.Fecha};{currExpediente.Carretera};{currExpediente.Registro};{currExpediente.Conductor};{currExpediente.Vehiculo};{currExpediente.Tramo};{currExpediente.Sentido}\n")
 
     print("Data transformed correctly")
 
