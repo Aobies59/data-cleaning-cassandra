@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 import re
 import json
-import os
 
 @dataclass
 class Fecha:
@@ -90,6 +89,8 @@ class Expediente:
     Fecha: str
     Tramo: str
     Sentido: str
+    LimiteRadar: int
+    Multa: bool
     Carretera: str
     Registro: str
     Conductor: str
@@ -103,11 +104,6 @@ REGISTROS_FILENAME = "data/registros.csv"
 VEHICULOS_FILENAME = "data/vehiculos.csv"
 
 def main():
-    for filename in os.listdir("data"):
-        filePath = os.path.join("data", filename)
-        if os.path.isfile(filePath):
-            os.remove(filePath)
-
     with open("sample.json", encoding="latin1") as file:
         fileContent = file.read()
     data = fileContent.split("\n{")
@@ -135,7 +131,7 @@ def main():
         file.write("Matricula;Marca;Modelo;Potencia;Color;NumChasis;FechaMatriculacion;FechaITV;Propietario\n")
 
     with open(EXPEDIENTES_FILENAME, "w") as file:
-        file.write("ID;Fecha;Tramo;Sentido;Carretera;Registro;Conductor;Vehiculo\n")
+        file.write("ID;Fecha;Tramo;Sentido;LimiteRadar;Multa;Carretera;Registro;Conductor;Vehiculo\n")
 
     firstTime = True
     for currObject in data:
@@ -306,12 +302,14 @@ def main():
             Conductor = currConductor.DNI,
             Vehiculo = currVehiculo.Matricula,
             Tramo = currObject["radar"]["mileage"],
-            Sentido = "Ascendente" if currObject["radar"]["direction"] == "ascending" else "Descendiente"
+            Sentido = "Ascendente" if currObject["radar"]["direction"] == "ascending" else "Descendiente",
+            LimiteRadar=currObject["radar"]["speed limit"],
+            Multa=True if currObject.get("Speed ticket") else False
         )
         if currExpediente.ID not in idsExpedientes:
             idsExpedientes.add(currExpediente.ID)
             with open(EXPEDIENTES_FILENAME, "a") as expedientesFile:
-                expedientesFile.write(f"{currExpediente.ID};{currExpediente.Fecha};{currExpediente.Tramo};{currExpediente.Sentido};{currExpediente.Carretera};{currExpediente.Registro};{currExpediente.Conductor};{currExpediente.Vehiculo}\n")
+                expedientesFile.write(f"{currExpediente.ID};{currExpediente.Fecha};{currExpediente.Tramo};{currExpediente.Sentido};{currExpediente.LimiteRadar};{currExpediente.Multa};{currExpediente.Carretera};{currExpediente.Registro};{currExpediente.Conductor};{currExpediente.Vehiculo}\n")
 
     print("Data transformed correctly")
 
